@@ -294,9 +294,7 @@ public class HeroSelectScene extends PixelScene {
 		updateOptionsColor();
 		btnOptions.visible = false;
 
-		if(!SPDSettings.intro()){
-			add(btnOptions);
-		}
+		add(btnOptions);
 
 		if (!Badges.isUnlocked(Badges.Badge.VICTORY) && !DeviceCompat.isDebug()){
 			Dungeon.challenges = 0;
@@ -526,7 +524,7 @@ public class HeroSelectScene extends PixelScene {
 			infoButton.setPos(heroName.right(), heroName.top() + (heroName.height() - infoButton.height())/2f);
 			align(infoButton);
 
-			btnOptions.visible = btnOptions.active = !SPDSettings.intro();
+			btnOptions.visible = btnOptions.active = true;
 
 		} else {
 			title.visible = false;
@@ -541,7 +539,7 @@ public class HeroSelectScene extends PixelScene {
 			infoButton.visible = infoButton.active = true;
 			infoButton.setPos(startBtn.right(), startBtn.top());
 
-			btnOptions.visible = btnOptions.active = !SPDSettings.intro();
+			btnOptions.visible = btnOptions.active = true;
 			btnOptions.setPos(startBtn.left()-btnOptions.width(), startBtn.top());
 
 			optionsPane.setPos(heroBtns.get(0).left(), startBtn.top() - optionsPane.height() - 2);
@@ -762,6 +760,7 @@ public class HeroSelectScene extends PixelScene {
 			if (!SPDSettings.customSeed().isEmpty()) seedButton.icon().hardlight(1f, 1.5f, 0.67f);;
 			buttons.add(seedButton);
 			add(seedButton);
+			if (!Badges.isUnlocked(Badges.Badge.VICTORY) && !DeviceCompat.isDebug()) seedButton.enable(false);
 
 			StyledButton dailyButton = new StyledButton(Chrome.Type.BLANK, Messages.get(HeroSelectScene.class, "daily"), 6){
 
@@ -868,6 +867,7 @@ public class HeroSelectScene extends PixelScene {
 			dailyButton.icon(Icons.get(Icons.CALENDAR));
 			add(dailyButton);
 			buttons.add(dailyButton);
+			if (!Badges.isUnlocked(Badges.Badge.VICTORY) && !DeviceCompat.isDebug()) dailyButton.enable(false);
 
 			challengeButton = new StyledButton(Chrome.Type.BLANK, Messages.get(WndChallenges.class, "title"), 6){
 				@Override
@@ -894,6 +894,7 @@ public class HeroSelectScene extends PixelScene {
 			challengeButton.icon(Icons.get(SPDSettings.challenges() > 0 ? Icons.CHALLENGE_COLOR : Icons.CHALLENGE_GREY));
 			add(challengeButton);
 			buttons.add(challengeButton);
+			if (!Badges.isUnlocked(Badges.Badge.VICTORY) && !DeviceCompat.isDebug()) challengeButton.enable(false);
 
 			playstyleButton = new StyledButton(Chrome.Type.BLANK, Messages.get(WndPlaystyles.class, "title"), 6){
 				@Override
