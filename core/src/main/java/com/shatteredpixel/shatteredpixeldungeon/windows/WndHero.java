@@ -413,10 +413,10 @@ public class WndHero extends WndTabbed {
 
 			if (anyActive) {
 				// Compute total multipliers
-				int dmgPct   = Math.round(((1f + gcLvl * 0.5f) * (1f - asLvl * 0.333f) - 1f) * 100);
-				int hpPct    = Math.round(((1f - gcLvl * 0.3f) * (1f + wtLvl * 0.3f) - 1f) * 100);
-				int speedPct = Math.round(((1f + asLvl * 0.2f) * (1f - wtLvl * 0.2f) - 1f) * 100);
-				int armorPct = Math.round(((1f - asLvl * 0.333f) * (1f + wtLvl * 0.333f) - 1f) * 100);
+				int dmgPct   = Math.round((gcLvl * 0.5f - asLvl * 0.333f) * 100);
+				int hpPct    = Math.round((wtLvl * 0.3f - gcLvl * 0.25f) * 100);
+				int speedPct = Math.round((asLvl - wtLvl) * 0.2f  * 100);
+				int armorPct = Math.round((wtLvl - asLvl) * 0.333f * 100);
 
 				StringBuilder sb = new StringBuilder();
 				if (dmgPct   != 0) appendStat(sb, "Damage",    dmgPct);

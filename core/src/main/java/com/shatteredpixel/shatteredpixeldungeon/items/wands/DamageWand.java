@@ -62,8 +62,7 @@ public abstract class DamageWand extends Wand{
 		}
 		int gcLvl = Dungeon.playstyleLevel(Playstyles.GLASS_CANNON);
 		int asLvl = Dungeon.playstyleLevel(Playstyles.AGILE_SPEEDSTER);
-		if (gcLvl != 0) dmg = Math.round(dmg * (1f + gcLvl * 0.5f));
-		if (asLvl != 0) dmg = Math.round(dmg * (1f - asLvl * 0.333f));
+		if (gcLvl != 0 || asLvl != 0) dmg = Math.round(dmg * (1f + gcLvl * 0.5f - asLvl * 0.333f));
 
 		return dmg;
 	}

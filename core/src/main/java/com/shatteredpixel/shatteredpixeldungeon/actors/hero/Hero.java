@@ -265,8 +265,7 @@ public class Hero extends Char {
 		
 		int gcLvlHT = Dungeon.playstyleLevel(Playstyles.GLASS_CANNON);
 		int wtLvlHT = Dungeon.playstyleLevel(Playstyles.WALKING_TANK);
-		if (gcLvlHT != 0) HT = Math.round(HT * (1f - gcLvlHT * 0.3f));
-		if (wtLvlHT != 0) HT = Math.round(HT * (1f + wtLvlHT * 0.3f));
+		if (gcLvlHT != 0 || wtLvlHT != 0) HT = Math.round(HT * (1f + wtLvlHT * 0.3f - gcLvlHT * 0.25f));
 
 		if (boostHP){
 			HP += Math.max(HT - curHT, 0);
@@ -664,8 +663,7 @@ public class Hero extends Char {
 
 		int asLvlDR = Dungeon.playstyleLevel(Playstyles.AGILE_SPEEDSTER);
 		int wtLvlDR = Dungeon.playstyleLevel(Playstyles.WALKING_TANK);
-		if (asLvlDR != 0) dr = Math.round(dr * (1f - asLvlDR * 0.333f));
-		if (wtLvlDR != 0) dr = Math.round(dr * (1f + wtLvlDR * 0.333f));
+		if (asLvlDR != 0 || wtLvlDR != 0) dr = Math.round(dr * (1f + (wtLvlDR - asLvlDR) * 0.333f));
 
 		return dr;
 	}
@@ -706,8 +704,7 @@ public class Hero extends Char {
 
 		int gcLvlDmg = Dungeon.playstyleLevel(Playstyles.GLASS_CANNON);
 		int asLvlDmg = Dungeon.playstyleLevel(Playstyles.AGILE_SPEEDSTER);
-		if (gcLvlDmg != 0) dmg = Math.round(dmg * (1f + gcLvlDmg * 0.5f));
-		if (asLvlDmg != 0) dmg = Math.round(dmg * (1f - asLvlDmg * 0.333f));
+		if (gcLvlDmg != 0 || asLvlDmg != 0) dmg = Math.round(dmg * (1f + gcLvlDmg * 0.5f - asLvlDmg * 0.333f));
 
 		return dmg;
 	}
@@ -749,8 +746,7 @@ public class Hero extends Char {
 
 		int asLvlSpd = Dungeon.playstyleLevel(Playstyles.AGILE_SPEEDSTER);
 		int wtLvlSpd = Dungeon.playstyleLevel(Playstyles.WALKING_TANK);
-		if (asLvlSpd != 0) speed *= (1f + asLvlSpd * 0.2f);
-		if (wtLvlSpd != 0) speed *= (1f - wtLvlSpd * 0.2f);
+		if (asLvlSpd != 0 || wtLvlSpd != 0) speed *= (1f + (asLvlSpd - wtLvlSpd) * 0.2f);
 
 		return speed;
 
