@@ -8,7 +8,15 @@ When choosing a character and starting a game, you can choose to automatically r
 
 This option is available where you'd normally choose custom seeds and challenges.  It's always enabled even if you've never won the game.
 
-I built this option because I *always* want a Mimic Tooth run.  But it's very useful for experimenting.  Warning: always knowing what you'll find can make the game less interesting.
+In the text boxes, you enter a string describing an item on each line.  The string is simply matched against the display name of an item.  So to get a mimic tooth and an armor +1 of any kind and a ring of haste, you might enter:
+
+    mimic
+    armor +1
+    ring of haste
+
+Bear in mind that 'haste' for instance will match both a ring of haste and a potion of haste.
+
+I built this fork because I *always* want a Mimic Tooth run.  But it's very useful for experimenting.  Warning: always knowing what you'll find can make the game less interesting.
 
 ## Playstyles
 
