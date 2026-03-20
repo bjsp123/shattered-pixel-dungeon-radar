@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Bones;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Playstyles;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
@@ -262,6 +263,11 @@ public class Hero extends Char {
 			HT += buff(ElixirOfMight.HTBoost.class).boost();
 		}
 		
+		int gcLvlHT = Dungeon.playstyleLevel(Playstyles.GLASS_CANNON);
+		int wtLvlHT = Dungeon.playstyleLevel(Playstyles.WALKING_TANK);
+		if (gcLvlHT != 0) HT = Math.round(HT * (1f - gcLvlHT * 0.3f));
+		if (wtLvlHT != 0) HT = Math.round(HT * (1f + wtLvlHT * 0.3f));
+
 		if (boostHP){
 			HP += Math.max(HT - curHT, 0);
 		}
@@ -655,7 +661,12 @@ public class Hero extends Char {
 		if (buff(HoldFast.class) != null){
 			dr += buff(HoldFast.class).armorBonus();
 		}
-		
+
+		int asLvlDR = Dungeon.playstyleLevel(Playstyles.AGILE_SPEEDSTER);
+		int wtLvlDR = Dungeon.playstyleLevel(Playstyles.WALKING_TANK);
+		if (asLvlDR != 0) dr = Math.round(dr * (1f - asLvlDR * 0.333f));
+		if (wtLvlDR != 0) dr = Math.round(dr * (1f + wtLvlDR * 0.333f));
+
 		return dr;
 	}
 	
@@ -692,6 +703,12 @@ public class Hero extends Char {
 		}
 
 		if (dmg < 0) dmg = 0;
+
+		int gcLvlDmg = Dungeon.playstyleLevel(Playstyles.GLASS_CANNON);
+		int asLvlDmg = Dungeon.playstyleLevel(Playstyles.AGILE_SPEEDSTER);
+		if (gcLvlDmg != 0) dmg = Math.round(dmg * (1f + gcLvlDmg * 0.5f));
+		if (asLvlDmg != 0) dmg = Math.round(dmg * (1f - asLvlDmg * 0.333f));
+
 		return dmg;
 	}
 
@@ -729,9 +746,14 @@ public class Hero extends Char {
 		}
 
 		speed = AscensionChallenge.modifyHeroSpeed(speed);
-		
+
+		int asLvlSpd = Dungeon.playstyleLevel(Playstyles.AGILE_SPEEDSTER);
+		int wtLvlSpd = Dungeon.playstyleLevel(Playstyles.WALKING_TANK);
+		if (asLvlSpd != 0) speed *= (1f + asLvlSpd * 0.2f);
+		if (wtLvlSpd != 0) speed *= (1f - wtLvlSpd * 0.2f);
+
 		return speed;
-		
+
 	}
 
 	@Override

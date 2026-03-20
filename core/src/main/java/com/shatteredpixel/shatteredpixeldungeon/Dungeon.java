@@ -180,6 +180,7 @@ public class Dungeon {
 	}
 
 	public static int challenges;
+	public static int[] playstyleLevels = new int[Playstyles.COUNT];
 	public static float mobsToChampion;
 
 	public static Hero hero;
@@ -234,6 +235,7 @@ public class Dungeon {
 
 		initialVersion = version = Game.versionCode;
 		challenges = SPDSettings.challenges();
+		for (int i = 0; i < Playstyles.COUNT; i++) playstyleLevels[i] = SPDSettings.playstyleLvl(i);
 		mobsToChampion = 1;
 
 		Actor.clear();
@@ -284,10 +286,20 @@ public class Dungeon {
 		Badges.reset();
 		
 		GamesInProgress.selectedClass.initHero( hero );
+		hero.updateHT( false );
 	}
 
 	public static boolean isChallenged( int mask ) {
 		return (challenges & mask) != 0;
+	}
+
+	public static int playstyleLevel( int cat ) {
+		return playstyleLevels[cat];
+	}
+
+	public static boolean hasAnyPlaystyle() {
+		for (int lvl : playstyleLevels) if (lvl != 0) return true;
+		return false;
 	}
 
 	public static boolean levelHasBeenGenerated(int depth, int branch){
@@ -633,6 +645,7 @@ public class Dungeon {
 			bundle.put( DAILY_REPLAY, dailyReplay );
 			bundle.put( LAST_PLAYED, lastPlayed = Game.realTime);
 			bundle.put( CHALLENGES, challenges );
+			for (int i = 0; i < Playstyles.COUNT; i++) bundle.put( "playstyle_" + i, playstyleLevels[i] );
 			bundle.put( MOBS_TO_CHAMPION, mobsToChampion );
 			bundle.put( HERO, hero );
 			bundle.put( DEPTH, depth );
@@ -740,6 +753,7 @@ public class Dungeon {
 		Toolbar.swappedQuickslots = false;
 
 		Dungeon.challenges = bundle.getInt( CHALLENGES );
+		for (int i = 0; i < Playstyles.COUNT; i++) playstyleLevels[i] = bundle.contains("playstyle_"+i) ? bundle.getInt("playstyle_"+i) : 0;
 		Dungeon.mobsToChampion = bundle.getFloat( MOBS_TO_CHAMPION );
 		
 		Dungeon.level = null;

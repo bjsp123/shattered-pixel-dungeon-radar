@@ -22,7 +22,9 @@
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Playstyles;
 import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
+import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
@@ -60,6 +62,7 @@ public class WndHero extends WndTabbed {
 	private StatsTab stats;
 	private TalentsTab talents;
 	private BuffsTab buffs;
+	private PlaystyleTab playstyle;
 
 	public static int lastIdx = 0;
 
@@ -80,6 +83,10 @@ public class WndHero extends WndTabbed {
 		add( buffs );
 		buffs.setRect(0, 0, WIDTH, HEIGHT);
 		buffs.setupList();
+
+		playstyle = new PlaystyleTab();
+		add( playstyle );
+		playstyle.setRect(0, 0, WIDTH, HEIGHT);
 		
 		add( new IconTab( Icons.get(Icons.RANKINGS) ) {
 			protected void select( boolean value ) {
@@ -106,6 +113,13 @@ public class WndHero extends WndTabbed {
 				super.select( value );
 				if (selected) lastIdx = 2;
 				buffs.visible = buffs.active = selected;
+			}
+		} );
+		add( new IconTab( Icons.get(Icons.PREFS) ) {
+			protected void select( boolean value ) {
+				super.select( value );
+				if (selected) lastIdx = 3;
+				playstyle.visible = playstyle.active = selected;
 			}
 		} );
 
@@ -360,4 +374,104 @@ public class WndHero extends WndTabbed {
 			}
 		}
 	}
+	private class PlaystyleTab extends Component {
+
+		private static final int GAP = 4;
+		private ScrollPane pane;
+
+		@Override
+		protected void createChildren() {
+			super.createChildren();
+			pane = new ScrollPane(new Component());
+			add(pane);
+		}
+
+		@Override
+		protected void layout() {
+			super.layout();
+			pane.setRect(0, 0, width, height);
+			buildContent();
+		}
+
+		private void buildContent() {
+			Component content = pane.content();
+			float pos = 0;
+
+			int gcLvl = Dungeon.playstyleLevels[Playstyles.GLASS_CANNON];
+			int asLvl = Dungeon.playstyleLevels[Playstyles.AGILE_SPEEDSTER];
+			int wtLvl = Dungeon.playstyleLevels[Playstyles.WALKING_TANK];
+
+			boolean anyActive = gcLvl != 0 || asLvl != 0 || wtLvl != 0;
+
+			RenderedTextBlock heading = PixelScene.renderTextBlock("Playstyle Effects:", 8);
+			heading.hardlight(Window.TITLE_COLOR);
+			heading.maxWidth((int) width);
+			heading.setPos(0, pos);
+			PixelScene.align(heading);
+			content.add(heading);
+			pos = heading.bottom() + GAP;
+
+			if (anyActive) {
+				// Compute total multipliers
+				int dmgPct   = Math.round(((1f + gcLvl * 0.5f) * (1f - asLvl * 0.333f) - 1f) * 100);
+				int hpPct    = Math.round(((1f - gcLvl * 0.3f) * (1f + wtLvl * 0.3f) - 1f) * 100);
+				int speedPct = Math.round(((1f + asLvl * 0.2f) * (1f - wtLvl * 0.2f) - 1f) * 100);
+				int armorPct = Math.round(((1f - asLvl * 0.333f) * (1f + wtLvl * 0.333f) - 1f) * 100);
+
+				StringBuilder sb = new StringBuilder();
+				if (dmgPct   != 0) appendStat(sb, "Damage",    dmgPct);
+				if (hpPct    != 0) appendStat(sb, "Max HP",    hpPct);
+				if (speedPct != 0) appendStat(sb, "Speed",     speedPct);
+				if (armorPct != 0) appendStat(sb, "Armor",     armorPct);
+
+				RenderedTextBlock summary = PixelScene.renderTextBlock(sb.toString(), 7);
+				summary.maxWidth((int) width);
+				summary.setPos(0, pos);
+				PixelScene.align(summary);
+				content.add(summary);
+				pos = summary.bottom() + GAP;
+			} else {
+				RenderedTextBlock none = PixelScene.renderTextBlock(Messages.get(WndHero.class, "no_playstyle"), 7);
+				none.maxWidth((int) width);
+				none.setPos(0, pos);
+				PixelScene.align(none);
+				content.add(none);
+				pos = none.bottom() + GAP;
+			}
+
+			if (SPDSettings.hasItemRequirements()) {
+				pos += GAP;
+				RenderedTextBlock reqHeader = PixelScene.renderTextBlock(Messages.get(WndHero.class, "item_requirements"), 7);
+				reqHeader.hardlight(Window.TITLE_COLOR);
+				reqHeader.maxWidth((int) width);
+				reqHeader.setPos(0, pos);
+				PixelScene.align(reqHeader);
+				content.add(reqHeader);
+				pos = reqHeader.bottom() + 1;
+
+				String[] reqLabels = {"Floors 1-5", "Floors 6-10", "Floors 11-15"};
+				String[] vals = {SPDSettings.seedfinderItemsLvl5(), SPDSettings.seedfinderItemsLvl10(), SPDSettings.seedfinderItemsLvl15()};
+				for (int i = 0; i < 3; i++) {
+					if (vals[i].isEmpty()) continue;
+					RenderedTextBlock line = PixelScene.renderTextBlock(reqLabels[i] + ": " + vals[i], 6);
+					line.maxWidth((int) width);
+					line.setPos(0, pos);
+					PixelScene.align(line);
+					content.add(line);
+					pos = line.bottom() + 1;
+				}
+			}
+
+			content.setSize(width, pos);
+			pane.setSize(width, height);
+		}
+
+		private void appendStat(StringBuilder sb, String name, int pct) {
+			if (sb.length() > 0) sb.append(", ");
+			sb.append(name).append(" ");
+			if (pct > 0) sb.append("+");
+			sb.append(pct).append("%");
+		}
+	}
+
 }

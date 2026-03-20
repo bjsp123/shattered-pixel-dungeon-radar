@@ -246,9 +246,22 @@ public class SPDSettings extends GameSettings {
 	public static void challenges( int value ) {
 		put( KEY_CHALLENGES, value );
 	}
-	
+
 	public static int challenges() {
 		return getInt( KEY_CHALLENGES, 0, 0, Challenges.MAX_VALUE );
+	}
+
+	public static int playstyleLvl( int cat ) {
+		return getInt( "playstyle_" + cat, 0, 0, 3 );
+	}
+
+	public static void playstyleLvl( int cat, int value ) {
+		put( "playstyle_" + cat, value );
+	}
+
+	public static boolean hasAnyPlaystyle() {
+		for (int i = 0; i < Playstyles.COUNT; i++) if (playstyleLvl(i) != 0) return true;
+		return false;
 	}
 
 	public static void customSeed( String value ){
@@ -430,6 +443,136 @@ public class SPDSettings extends GameSettings {
 		} else {
 			return Languages.matchCode(code);
 		}
+	}
+
+	//Seed Finder
+
+	public static final String KEY_SEEDFINDER_FLOORS        = "seedfinder_floors";
+	public static final String KEY_SEEDFINDER_CONDITION_ANY = "seedfinder_condition_any";
+	public static final String KEY_USE_ROOMS                = "seedfinder_use_rooms";
+	public static final String KEY_LOG_TRINKETS             = "seedfinder_log_trinkets";
+	public static final String KEY_LOG_EQUIPMENT            = "seedfinder_log_equipment";
+	public static final String KEY_LOG_SCROLLS              = "seedfinder_log_scrolls";
+	public static final String KEY_LOG_POTIONS              = "seedfinder_log_potions";
+	public static final String KEY_LOG_RINGS                = "seedfinder_log_rings";
+	public static final String KEY_LOG_WANDS               = "seedfinder_log_wands";
+	public static final String KEY_LOG_ARTIFACTS            = "seedfinder_log_artifacts";
+	public static final String KEY_LOG_MISC                 = "seedfinder_log_misc";
+	public static final String KEY_IGNORE_BLACKLIST         = "seedfinder_ignore_blacklist";
+
+	public static void seedfinderFloors( int value ){
+		put( KEY_SEEDFINDER_FLOORS, value );
+	}
+
+	public static int seedfinderFloors(){
+		return getInt( KEY_SEEDFINDER_FLOORS, 5, 1, 26 );
+	}
+
+	public static void seedfinderConditionANY( boolean value ){
+		put( KEY_SEEDFINDER_CONDITION_ANY, value );
+	}
+
+	public static boolean seedfinderConditionANY(){
+		return getBoolean( KEY_SEEDFINDER_CONDITION_ANY, true );
+	}
+
+	public static void useRooms( boolean value ){
+		put( KEY_USE_ROOMS, value );
+	}
+
+	public static boolean useRooms(){
+		return getBoolean( KEY_USE_ROOMS, false );
+	}
+
+	public static void logTrinkets( boolean value ){
+		put( KEY_LOG_TRINKETS, value );
+	}
+
+	public static boolean logTrinkets(){
+		return getBoolean( KEY_LOG_TRINKETS, true );
+	}
+
+	public static void logEquipment( boolean value ){
+		put( KEY_LOG_EQUIPMENT, value );
+	}
+
+	public static boolean logEquipment(){
+		return getBoolean( KEY_LOG_EQUIPMENT, true );
+	}
+
+	public static void logScrolls( boolean value ){
+		put( KEY_LOG_SCROLLS, value );
+	}
+
+	public static boolean logScrolls(){
+		return getBoolean( KEY_LOG_SCROLLS, true );
+	}
+
+	public static void logPotions( boolean value ){
+		put( KEY_LOG_POTIONS, value );
+	}
+
+	public static boolean logPotions(){
+		return getBoolean( KEY_LOG_POTIONS, true );
+	}
+
+	public static void logRings( boolean value ){
+		put( KEY_LOG_RINGS, value );
+	}
+
+	public static boolean logRings(){
+		return getBoolean( KEY_LOG_RINGS, true );
+	}
+
+	public static void logWands( boolean value ){
+		put( KEY_LOG_WANDS, value );
+	}
+
+	public static boolean logWands(){
+		return getBoolean( KEY_LOG_WANDS, true );
+	}
+
+	public static void logArtifacts( boolean value ){
+		put( KEY_LOG_ARTIFACTS, value );
+	}
+
+	public static boolean logArtifacts(){
+		return getBoolean( KEY_LOG_ARTIFACTS, true );
+	}
+
+	public static void logMisc( boolean value ){
+		put( KEY_LOG_MISC, value );
+	}
+
+	public static boolean logMisc(){
+		return getBoolean( KEY_LOG_MISC, false );
+	}
+
+	public static void ignoreBlacklist( boolean value ){
+		put( KEY_IGNORE_BLACKLIST, value );
+	}
+
+	public static boolean ignoreBlacklist(){
+		return getBoolean( KEY_IGNORE_BLACKLIST, false );
+	}
+
+	public static final String KEY_SEEDFINDER_ITEMS_LVL5  = "seedfinder_items_lvl5";
+	public static final String KEY_SEEDFINDER_ITEMS_LVL10 = "seedfinder_items_lvl10";
+	public static final String KEY_SEEDFINDER_ITEMS_LVL15 = "seedfinder_items_lvl15";
+
+	public static void seedfinderItemsLvl5( String v )  { put( KEY_SEEDFINDER_ITEMS_LVL5,  v ); }
+	public static String seedfinderItemsLvl5()           { return getString( KEY_SEEDFINDER_ITEMS_LVL5,  "" ); }
+
+	public static void seedfinderItemsLvl10( String v ) { put( KEY_SEEDFINDER_ITEMS_LVL10, v ); }
+	public static String seedfinderItemsLvl10()          { return getString( KEY_SEEDFINDER_ITEMS_LVL10, "" ); }
+
+	public static void seedfinderItemsLvl15( String v ) { put( KEY_SEEDFINDER_ITEMS_LVL15, v ); }
+	public static String seedfinderItemsLvl15()          { return getString( KEY_SEEDFINDER_ITEMS_LVL15, "" ); }
+
+	public static boolean hasItemRequirements() {
+		return !seedfinderItemsLvl5().isEmpty()
+			|| !seedfinderItemsLvl10().isEmpty()
+			|| !seedfinderItemsLvl15().isEmpty();
 	}
 
 	//Window management (desktop only atm)

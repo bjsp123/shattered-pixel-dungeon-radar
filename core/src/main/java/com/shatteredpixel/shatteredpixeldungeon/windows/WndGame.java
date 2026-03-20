@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Playstyles;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
@@ -72,6 +73,7 @@ public class WndGame extends Window {
 			} );
 			curBtn.icon(Icons.get(Icons.CHALLENGE_COLOR));
 		}
+
 
 		// Restart
 		if (Dungeon.hero == null || !Dungeon.hero.isAlive()) {

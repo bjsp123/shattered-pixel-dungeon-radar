@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.wands;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Playstyles;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.WandEmpower;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -59,6 +60,11 @@ public abstract class DamageWand extends Wand{
 			}
 			Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG, 0.75f, 1.2f);
 		}
+		int gcLvl = Dungeon.playstyleLevel(Playstyles.GLASS_CANNON);
+		int asLvl = Dungeon.playstyleLevel(Playstyles.AGILE_SPEEDSTER);
+		if (gcLvl != 0) dmg = Math.round(dmg * (1f + gcLvl * 0.5f));
+		if (asLvl != 0) dmg = Math.round(dmg * (1f - asLvl * 0.333f));
+
 		return dmg;
 	}
 

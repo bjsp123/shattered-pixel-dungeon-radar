@@ -21,12 +21,15 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.scenes;
 
+import com.badlogic.gdx.Gdx;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
+import com.shatteredpixel.shatteredpixeldungeon.ItemRequirementsSearch;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.Rankings;
+import com.shatteredpixel.shatteredpixeldungeon.Playstyles;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
@@ -44,6 +47,8 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndChallenges;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndPlaystyles;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndItemRequirements;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndHeroInfo;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndKeyBindings;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndMessage;
@@ -154,6 +159,66 @@ public class HeroSelectScene extends PixelScene {
 
 				if (GamesInProgress.selectedClass == null) return;
 
+				// If item requirements are set and no manual custom seed, find a matching seed first
+				if (SPDSettings.hasItemRequirements() && SPDSettings.customSeed().isEmpty()) {
+					startBtn.active = false;
+
+					final String i5  = SPDSettings.seedfinderItemsLvl5();
+					final String i10 = SPDSettings.seedfinderItemsLvl10();
+					final String i15 = SPDSettings.seedfinderItemsLvl15();
+
+					final HeroClass savedClass = GamesInProgress.selectedClass;
+					final ItemRequirementsSearch searcher = new ItemRequirementsSearch();
+					final RenderedTextBlock[] countLabel = {null};
+					final Window[] searchingWnd = {null};
+
+					int wndW = PixelScene.landscape() ? 160 : 120;
+					RenderedTextBlock lbl = PixelScene.renderTextBlock(
+							Messages.get(HeroSelectScene.class, "item_req_searching") + "\n0 checked", 6);
+					lbl.maxWidth(wndW - 8);
+					lbl.setPos(4, 4);
+					Window wnd = new Window() {};
+					wnd.add(lbl);
+					wnd.resize(wndW, (int) lbl.bottom() + 4);
+					countLabel[0] = lbl;
+					searchingWnd[0] = wnd;
+					ShatteredPixelDungeon.scene().addToFront(wnd);
+
+					searcher.setProgressCallback(() -> {
+						int count = searcher.attemptCount.get();
+						Gdx.app.postRunnable(() -> {
+							if (countLabel[0] != null)
+								countLabel[0].text(Messages.get(HeroSelectScene.class, "item_req_searching") + "\n" + count + " checked");
+						});
+					});
+
+					Thread t = new Thread(() -> {
+						ItemRequirementsSearch.Result found = searcher
+								.findSeedWithRequirements(i5, i10, i15, 2000);
+						Gdx.app.postRunnable(() -> {
+							countLabel[0] = null;
+							searchingWnd[0].hide();
+							if (found != null) {
+								Dungeon.hero = null;
+								Dungeon.daily = Dungeon.dailyReplay = false;
+								Dungeon.customSeedText = "";
+								Dungeon.seed = DungeonSeed.convertFromText(found.code);
+								ActionIndicator.clearAction();
+								GamesInProgress.selectedClass = savedClass;
+								InterlevelScene.mode = InterlevelScene.Mode.DESCEND;
+								Game.switchScene(InterlevelScene.class);
+							} else {
+								startBtn.active = true;
+								ShatteredPixelDungeon.scene().addToFront(new WndMessage(
+										Messages.get(HeroSelectScene.class, "item_req_failed")));
+							}
+						});
+					});
+					t.setDaemon(true);
+					t.start();
+					return;
+				}
+
 				Dungeon.hero = null;
 				Dungeon.daily = Dungeon.dailyReplay = false;
 				Dungeon.initSeed();
@@ -236,6 +301,11 @@ public class HeroSelectScene extends PixelScene {
 		if (!Badges.isUnlocked(Badges.Badge.VICTORY) && !DeviceCompat.isDebug()){
 			Dungeon.challenges = 0;
 			SPDSettings.challenges(0);
+			SPDSettings.customSeed("");
+		}
+
+		// Clear any auto-generated numeric seed left by a previous search run
+		if (SPDSettings.customSeed().matches("[0-9]+")) {
 			SPDSettings.customSeed("");
 		}
 
@@ -406,6 +476,8 @@ public class HeroSelectScene extends PixelScene {
 			btnOptions.icon().hardlight(1f, 1.5f, 0.67f);
 		} else if (SPDSettings.challenges() != 0){
 			btnOptions.icon().hardlight(2f, 1.33f, 0.5f);
+		} else if (SPDSettings.hasItemRequirements()){
+			btnOptions.icon().hardlight(0.5f, 1.5f, 1.5f);
 		} else {
 			btnOptions.icon().resetColor();
 		}
@@ -627,6 +699,8 @@ public class HeroSelectScene extends PixelScene {
 		private ArrayList<ColorBlock> spacers;
 
 		protected StyledButton challengeButton;
+		protected StyledButton playstyleButton;
+		protected StyledButton itemReqButton;
 
 		@Override
 		protected void createChildren() {
@@ -820,6 +894,46 @@ public class HeroSelectScene extends PixelScene {
 			challengeButton.icon(Icons.get(SPDSettings.challenges() > 0 ? Icons.CHALLENGE_COLOR : Icons.CHALLENGE_GREY));
 			add(challengeButton);
 			buttons.add(challengeButton);
+
+			playstyleButton = new StyledButton(Chrome.Type.BLANK, Messages.get(WndPlaystyles.class, "title"), 6){
+				@Override
+				protected void onClick() {
+					int[] curLevels = new int[Playstyles.COUNT];
+					for (int i = 0; i < Playstyles.COUNT; i++) curLevels[i] = SPDSettings.playstyleLvl(i);
+					ShatteredPixelDungeon.scene().addToFront(new WndPlaystyles(curLevels, true) {
+						public void onBackPressed() {
+							super.onBackPressed();
+							icon(Icons.get(SPDSettings.hasAnyPlaystyle() ? Icons.CHALLENGE_COLOR : Icons.PREFS));
+							updateOptionsColor();
+						}
+					});
+				}
+			};
+			playstyleButton.leftJustify = true;
+			playstyleButton.icon(Icons.get(SPDSettings.hasAnyPlaystyle() ? Icons.CHALLENGE_COLOR : Icons.PREFS));
+			add(playstyleButton);
+			buttons.add(playstyleButton);
+
+			itemReqButton = new StyledButton(Chrome.Type.BLANK,
+					Messages.get(HeroSelectScene.class, "item_requirements"), 6) {
+				@Override
+				protected void onClick() {
+					ShatteredPixelDungeon.scene().addToFront(new WndItemRequirements() {
+						@Override
+						public void onSaveOrClear() {
+							itemReqButton.icon(Icons.get(Icons.MAGNIFY));
+							if (SPDSettings.hasItemRequirements())
+								itemReqButton.icon().hardlight(0.5f, 1.5f, 1.5f);
+							updateOptionsColor();
+						}
+					});
+				}
+			};
+			itemReqButton.leftJustify = true;
+			itemReqButton.icon(Icons.get(Icons.MAGNIFY));
+			if (SPDSettings.hasItemRequirements()) itemReqButton.icon().hardlight(0.5f, 1.5f, 1.5f);
+			buttons.add(itemReqButton);
+			add(itemReqButton);
 
 			int unlockedCount = 0;
 			for (HeroClass cls : HeroClass.values()){
