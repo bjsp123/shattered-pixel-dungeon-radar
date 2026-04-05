@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.PlaystyleConfig;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
@@ -120,7 +121,8 @@ public class HolyLance extends TargetedClericSpell {
 									if (Char.hasProp(enemy, Char.Property.UNDEAD) || Char.hasProp(enemy, Char.Property.DEMONIC)){
 										min = max;
 									}
-									enemy.damage(Hero.heroDamageIntRange(min, max), HolyLance.this);
+									int dmg = Math.round(Hero.heroDamageIntRange(min, max) * Dungeon.playstyle.getActualMultiplier(PlaystyleConfig.PLAYSTYLE_MAGIC_DAMAGE));
+									enemy.damage(dmg, HolyLance.this);
 									Sample.INSTANCE.play( Assets.Sounds.HIT_MAGIC, 1, Random.Float(0.8f, 1f) );
 									Sample.INSTANCE.play( Assets.Sounds.HIT_STAB, 1, Random.Float(0.8f, 1f) );
 

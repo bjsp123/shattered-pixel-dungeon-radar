@@ -22,13 +22,13 @@ public class WndItemRequirements extends Window {
 	private static final int INPUT_HEIGHT  = 36;
 
 	// Text stored per slot; committed to settings on Save.
-	private final String[] stored = new String[3];
+	private final String[] stored = new String[4];
 	private int activeSlot = 0;
 
-	// Background patches and text displays for all three slots.
-	private final NinePatch[]        slotBg   = new NinePatch[3];
-	private final RenderedTextBlock[] slotDisp = new RenderedTextBlock[3];
-	private final float[] slotY = new float[3];
+	// Background patches and text displays for all four slots.
+	private final NinePatch[]        slotBg   = new NinePatch[4];
+	private final RenderedTextBlock[] slotDisp = new RenderedTextBlock[4];
+	private final float[] slotY = new float[4];
 	private float slotW;
 
 	// Single TextInput — repositioned to whichever slot is active.
@@ -39,9 +39,10 @@ public class WndItemRequirements extends Window {
 		int width = PixelScene.landscape() ? 220 : 135;
 		slotW = width - 2 * MARGIN;
 
-		stored[0] = SPDSettings.seedfinderItemsLvl5();
-		stored[1] = SPDSettings.seedfinderItemsLvl10();
-		stored[2] = SPDSettings.seedfinderItemsLvl15();
+		stored[0] = SPDSettings.seedfinderItemsLvl1();
+		stored[1] = SPDSettings.seedfinderItemsLvl2();
+		stored[2] = SPDSettings.seedfinderItemsLvl5();
+		stored[3] = SPDSettings.seedfinderItemsLvl10();
 
 		IconTitle titleBar = new IconTitle(Icons.get(Icons.MAGNIFY),
 				Messages.get(this, "title"));
@@ -57,8 +58,8 @@ public class WndItemRequirements extends Window {
 
 		int textSize = (int)(PixelScene.uiCamera.zoom * 6);
 
-		String[] labelKeys = {"by_lvl5", "by_lvl10", "by_lvl15"};
-		for (int i = 0; i < 3; i++) {
+		String[] labelKeys = {"by_lvl1", "by_lvl2", "by_lvl5", "by_lvl10"};
+		for (int i = 0; i < 4; i++) {
 			RenderedTextBlock lbl = PixelScene.renderTextBlock(Messages.get(this, labelKeys[i]), 6);
 			lbl.setPos(MARGIN, pos); add(lbl); pos = lbl.bottom() + 1;
 			slotY[i] = pos;
@@ -102,9 +103,10 @@ public class WndItemRequirements extends Window {
 		RedButton btnSave = new RedButton(Messages.get(this, "save")) {
 			@Override protected void onClick() {
 				commitActive();
-				SPDSettings.seedfinderItemsLvl5(stored[0]);
-				SPDSettings.seedfinderItemsLvl10(stored[1]);
-				SPDSettings.seedfinderItemsLvl15(stored[2]);
+				SPDSettings.seedfinderItemsLvl1(stored[0]);
+				SPDSettings.seedfinderItemsLvl2(stored[1]);
+				SPDSettings.seedfinderItemsLvl5(stored[2]);
+				SPDSettings.seedfinderItemsLvl10(stored[3]);
 				onSaveOrClear();
 				hide();
 			}
@@ -113,9 +115,10 @@ public class WndItemRequirements extends Window {
 
 		RedButton btnClear = new RedButton(Messages.get(this, "clear")) {
 			@Override protected void onClick() {
+				SPDSettings.seedfinderItemsLvl1("");
+				SPDSettings.seedfinderItemsLvl2("");
 				SPDSettings.seedfinderItemsLvl5("");
 				SPDSettings.seedfinderItemsLvl10("");
-				SPDSettings.seedfinderItemsLvl15("");
 				onSaveOrClear();
 				hide();
 			}

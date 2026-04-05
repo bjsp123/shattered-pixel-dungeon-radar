@@ -181,6 +181,7 @@ public class Dungeon {
 
 	public static int challenges;
 	public static int[] playstyleLevels = new int[Playstyles.COUNT];
+	public static PlaystyleConfig playstyle = new PlaystyleConfig();
 	public static float mobsToChampion;
 
 	public static Hero hero;
@@ -236,6 +237,7 @@ public class Dungeon {
 		initialVersion = version = Game.versionCode;
 		challenges = SPDSettings.challenges();
 		for (int i = 0; i < Playstyles.COUNT; i++) playstyleLevels[i] = SPDSettings.playstyleLvl(i);
+		playstyle = PlaystyleConfig.compute( playstyleLevels );
 		mobsToChampion = 1;
 
 		Actor.clear();
@@ -754,6 +756,7 @@ public class Dungeon {
 
 		Dungeon.challenges = bundle.getInt( CHALLENGES );
 		for (int i = 0; i < Playstyles.COUNT; i++) playstyleLevels[i] = bundle.contains("playstyle_"+i) ? bundle.getInt("playstyle_"+i) : 0;
+		playstyle = PlaystyleConfig.compute( playstyleLevels );
 		Dungeon.mobsToChampion = bundle.getFloat( MOBS_TO_CHAMPION );
 		
 		Dungeon.level = null;

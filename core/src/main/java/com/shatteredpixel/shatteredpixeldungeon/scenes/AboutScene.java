@@ -72,6 +72,7 @@ public class AboutScene extends PixelScene {
 				"Developed by: _Evan Debenham_\nBased on Pixel Dungeon's open source",
 				"ShatteredPixel.com",
 				"https://ShatteredPixel.com");
+		shpx.setSubtitle("A Shattered Pixel Dungeon fork by bjsp123", Window.SHPX_COLOR);
 		if (landscape()){
 			shpx.setRect((w - fullWidth)/2f - 6, insets.top + 10, 120, 0);
 		} else {
@@ -262,6 +263,7 @@ public class AboutScene extends PixelScene {
 
 		boolean large;
 		RenderedTextBlock title;
+		RenderedTextBlock subtitle;
 		Image avatar;
 		Flare flare;
 		RenderedTextBlock body;
@@ -269,6 +271,14 @@ public class AboutScene extends PixelScene {
 		RenderedTextBlock link;
 		ColorBlock linkUnderline;
 		PointerArea linkButton;
+
+		public CreditsBlock setSubtitle( String text, int highlight ) {
+			subtitle = PixelScene.renderTextBlock( text, 6 );
+			if (highlight != -1) subtitle.hardlight( highlight );
+			subtitle.align( RenderedTextBlock.CENTER_ALIGN );
+			add( subtitle );
+			return this;
+		}
 
 		//many elements can be null, but body is assumed to have content.
 		private CreditsBlock(boolean large, int highlight, String title, Image avatar, String body, String linkText, String linkUrl){
@@ -329,6 +339,12 @@ public class AboutScene extends PixelScene {
 				title.maxWidth((int)width());
 				title.setPos( x + (width() - title.width())/2f, topY);
 				topY += title.height() + (large ? 2 : 1);
+			}
+
+			if (subtitle != null){
+				subtitle.maxWidth((int)width());
+				subtitle.setPos( x + (width() - subtitle.width())/2f, topY);
+				topY += subtitle.height() + 2;
 			}
 
 			if (large){

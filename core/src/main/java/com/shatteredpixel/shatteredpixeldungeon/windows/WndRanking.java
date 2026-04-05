@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Playstyles;
 import com.shatteredpixel.shatteredpixeldungeon.QuickSlot;
 import com.shatteredpixel.shatteredpixeldungeon.Rankings;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
@@ -109,11 +110,12 @@ public class WndRanking extends WndTabbed {
 
 		if (Dungeon.hero != null) {
 			Icons[] icons =
-					{Icons.RANKINGS, Icons.TALENT, Icons.BACKPACK_LRG, Icons.BADGES, Icons.CHALLENGE_COLOR};
+					{Icons.RANKINGS, Icons.TALENT, Icons.BACKPACK_LRG, Icons.BADGES, Icons.CHALLENGE_COLOR, Icons.CHALLENGE_COLOR};
 			Group[] pages =
-					{new StatsTab(), new TalentsTab(), new ItemsTab(), new BadgesTab(), null};
+					{new StatsTab(), new TalentsTab(), new ItemsTab(), new BadgesTab(), null, null};
 
-			if (Dungeon.challenges != 0) pages[4] = new ChallengesTab();
+			if (Dungeon.challenges != 0)    pages[4] = new ChallengesTab();
+			if (Dungeon.hasAnyPlaystyle())  pages[5] = new PlaystyleTab();
 
 			for (int i = 0; i < pages.length; i++) {
 
@@ -474,6 +476,46 @@ public class WndRanking extends WndTabbed {
 			}
 		}
 
+	}
+
+	private class PlaystyleTab extends Group {
+
+		public PlaystyleTab() {
+			super();
+
+			camera = WndRanking.this.camera;
+
+			float pos = 0;
+
+			for (int i = 0; i < Playstyles.COUNT; i++) {
+				int lvl = Dungeon.playstyleLevels[i];
+				if (lvl == 0) continue;
+
+				final String id = Playstyles.NAME_IDS[i];
+				final String name = Messages.titleCase(Messages.get(Playstyles.class, id));
+
+				RenderedTextBlock label = PixelScene.renderTextBlock(
+						name + ": Lv. " + lvl, 7 );
+				label.maxWidth( WIDTH - 16 );
+				label.setPos( 0, pos + 1 );
+				PixelScene.align(label);
+				add( label );
+
+				IconButton info = new IconButton(Icons.get(Icons.INFO)) {
+					@Override
+					protected void onClick() {
+						super.onClick();
+						ShatteredPixelDungeon.scene().add(
+								new WndMessage(Messages.get(Playstyles.class, id + "_desc"))
+						);
+					}
+				};
+				info.setRect( WIDTH - 16, pos, 16, 15 );
+				add( info );
+
+				pos = Math.max(label.bottom(), info.bottom()) + 1;
+			}
+		}
 	}
 
 	private class ItemButton extends Button {

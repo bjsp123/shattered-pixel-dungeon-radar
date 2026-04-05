@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.PlaystyleConfig;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
@@ -120,11 +121,13 @@ public class Smite extends TargetedClericSpell {
 	public static int bonusDmg( Hero attacker, Char defender){
 		int min = 5 + attacker.lvl/2;
 		int max = 10 + attacker.lvl;
+		int dmg;
 		if (Char.hasProp(defender, Char.Property.UNDEAD) || Char.hasProp(defender, Char.Property.DEMONIC)){
-			return max;
+			dmg = max;
 		} else {
-			return Hero.heroDamageIntRange(min, max);
+			dmg = Hero.heroDamageIntRange(min, max);
 		}
+		return Math.round(dmg * Dungeon.playstyle.getActualMultiplier(PlaystyleConfig.PLAYSTYLE_MAGIC_DAMAGE));
 	}
 
 	public static class SmiteTracker extends FlavourBuff {};

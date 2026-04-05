@@ -67,6 +67,7 @@ public class TitleScene extends PixelScene {
 	private Fireball leftFB;
 	private Fireball rightFB;
 	private Image signs;
+	private BitmapText radarLabel;
 
 	private StyledButton btnPlay;
 	private StyledButton btnSupport;
@@ -141,6 +142,21 @@ public class TitleScene extends PixelScene {
 		signs.x = title.x + (title.width() - signs.width())/2f;
 		signs.y = title.y;
 		add( signs );
+
+		radarLabel = new BitmapText( "radar", pixelFont ) {
+			@Override
+			public void draw() {
+				Blending.setLightMode();
+				super.draw();
+				Blending.setNormalMode();
+			}
+		};
+		radarLabel.measure();
+		radarLabel.hardlight( 0x00FF44 );
+		radarLabel.x = insets.left + (w - radarLabel.width()) / 2f;
+		radarLabel.y = title.y + title.height() + 1;
+		align( radarLabel );
+		add( radarLabel );
 
 		final Chrome.Type GREY_TR = Chrome.Type.GREY_BUTTON_TR;
 		
@@ -333,6 +349,7 @@ public class TitleScene extends PixelScene {
 		btnAbout.alpha(alpha);
 
 		version.alpha(alpha);
+		radarLabel.alpha(alpha);
 		btnFade.icon().alpha(alpha);
 		if (btnExit != null){
 			btnExit.enable(alpha != 0);

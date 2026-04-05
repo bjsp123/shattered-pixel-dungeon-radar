@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.PlaystyleConfig;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
@@ -69,7 +70,8 @@ public class Radiance extends ClericSpell {
 			if (mob.alignment != Char.Alignment.ALLY && Dungeon.level.heroFOV[mob.pos]) {
 
 				if (mob.buff(GuidingLight.Illuminated.class) != null){
-					mob.damage(hero.lvl+5, GuidingLight.class);
+					int dmg = Math.round((hero.lvl+5) * Dungeon.playstyle.getActualMultiplier(PlaystyleConfig.PLAYSTYLE_MAGIC_DAMAGE));
+					mob.damage(dmg, GuidingLight.class);
 				} else {
 					Buff.affect(mob, GuidingLight.Illuminated.class);
 					Buff.affect(mob, GuidingLight.WasIlluminatedTracker.class);

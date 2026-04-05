@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.levels;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.PlaystyleConfig;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
@@ -1343,6 +1344,7 @@ public abstract class Level implements Bundlable {
 			if (c instanceof Hero){
 				viewDist *= 1f + 0.25f*((Hero) c).pointsInTalent(Talent.FARSIGHT);
 				viewDist *= EyeOfNewt.visionRangeMultiplier();
+				viewDist += Dungeon.playstyle.getActualMultiplier(PlaystyleConfig.PLAYSTYLE_VISION);
 			}
 			
 			ShadowCaster.castShadow( cx, cy, width(), fieldOfView, blocking, Math.round(viewDist) );
@@ -1422,6 +1424,7 @@ public abstract class Level implements Bundlable {
 				if (((Hero) c).hasTalent(Talent.HEIGHTENED_SENSES)){
 					mindVisRange = 1+((Hero) c).pointsInTalent(Talent.HEIGHTENED_SENSES);
 				}
+				mindVisRange += Math.round(Dungeon.playstyle.getActualMultiplier(PlaystyleConfig.PLAYSTYLE_XRAY_VISION));
 				if (c.buff(DivineSense.DivineSenseTracker.class) != null){
 					if (((Hero) c).heroClass == HeroClass.CLERIC){
 						mindVisRange = 4+4*((Hero) c).pointsInTalent(Talent.DIVINE_SENSE);

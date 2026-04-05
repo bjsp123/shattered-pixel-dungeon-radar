@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.PlaystyleConfig;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
@@ -944,6 +945,8 @@ public abstract class Mob extends Char {
 
 		dropBonus += ShardOfOblivion.lootChanceMultiplier()-1f;
 
+		dropBonus *= Dungeon.playstyle.getActualMultiplier(PlaystyleConfig.PLAYSTYLE_LUCK);
+
 		return lootChance * dropBonus;
 	}
 	
@@ -960,12 +963,13 @@ public abstract class Mob extends Char {
 			}
 		}
 		
-		//ring of wealth logic
-		if (Ring.getBuffedBonus(Dungeon.hero, RingOfWealth.Wealth.class) > 0) {
+		//ring of wealth + playstyle luck bonus drop logic
+		int luckBonus = Math.round(2f * (float)(Math.log(Dungeon.playstyle.getActualMultiplier(PlaystyleConfig.PLAYSTYLE_LUCK)) / Math.log(1.20)));
+		if (Ring.getBuffedBonus(Dungeon.hero, RingOfWealth.Wealth.class) > 0 || luckBonus > 0) {
 			int rolls = 1;
 			if (properties.contains(Property.BOSS)) rolls = 15;
 			else if (properties.contains(Property.MINIBOSS)) rolls = 5;
-			ArrayList<Item> bonus = RingOfWealth.tryForBonusDrop(Dungeon.hero, rolls);
+			ArrayList<Item> bonus = RingOfWealth.tryForBonusDrop(Dungeon.hero, rolls, luckBonus);
 			if (bonus != null && !bonus.isEmpty()) {
 				for (Item b : bonus) Dungeon.level.drop(b, pos).sprite.drop();
 				RingOfWealth.showFlareForBonusDrop(sprite);

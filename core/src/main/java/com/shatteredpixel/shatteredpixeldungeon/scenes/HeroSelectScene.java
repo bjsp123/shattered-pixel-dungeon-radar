@@ -163,9 +163,10 @@ public class HeroSelectScene extends PixelScene {
 				if (SPDSettings.hasItemRequirements() && SPDSettings.customSeed().isEmpty()) {
 					startBtn.active = false;
 
+					final String i1  = SPDSettings.seedfinderItemsLvl1();
+					final String i2  = SPDSettings.seedfinderItemsLvl2();
 					final String i5  = SPDSettings.seedfinderItemsLvl5();
 					final String i10 = SPDSettings.seedfinderItemsLvl10();
-					final String i15 = SPDSettings.seedfinderItemsLvl15();
 
 					final HeroClass savedClass = GamesInProgress.selectedClass;
 					final ItemRequirementsSearch searcher = new ItemRequirementsSearch();
@@ -194,7 +195,7 @@ public class HeroSelectScene extends PixelScene {
 
 					Thread t = new Thread(() -> {
 						ItemRequirementsSearch.Result found = searcher
-								.findSeedWithRequirements(i5, i10, i15, 2000);
+								.findSeedWithRequirements(i1, i2, i5, i10, 2000);
 						Gdx.app.postRunnable(() -> {
 							countLabel[0] = null;
 							searchingWnd[0].hide();

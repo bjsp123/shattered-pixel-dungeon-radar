@@ -25,8 +25,8 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Bones;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.Playstyles;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
+import com.shatteredpixel.shatteredpixeldungeon.PlaystyleConfig;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
@@ -263,9 +263,7 @@ public class Hero extends Char {
 			HT += buff(ElixirOfMight.HTBoost.class).boost();
 		}
 		
-		int gcLvlHT = Dungeon.playstyleLevel(Playstyles.GLASS_CANNON);
-		int wtLvlHT = Dungeon.playstyleLevel(Playstyles.WALKING_TANK);
-		if (gcLvlHT != 0 || wtLvlHT != 0) HT = Math.round(HT * (1f + wtLvlHT * 0.3f - gcLvlHT * 0.25f));
+		HT = Math.round(HT * Dungeon.playstyle.getActualMultiplier(PlaystyleConfig.PLAYSTYLE_HITPOINTS));
 
 		if (boostHP){
 			HP += Math.max(HT - curHT, 0);
@@ -555,7 +553,7 @@ public class Hero extends Char {
 		if (buff(Scimitar.SwordDance.class) != null){
 			accuracy *= 1.50f;
 		}
-		
+
 		if (!RingOfForce.fightingUnarmed(this)) {
 			return Math.max(1, Math.round(attackSkill * accuracy * wep.accuracyFactor( this, target )));
 		} else {
@@ -661,9 +659,7 @@ public class Hero extends Char {
 			dr += buff(HoldFast.class).armorBonus();
 		}
 
-		int asLvlDR = Dungeon.playstyleLevel(Playstyles.AGILE_SPEEDSTER);
-		int wtLvlDR = Dungeon.playstyleLevel(Playstyles.WALKING_TANK);
-		if (asLvlDR != 0 || wtLvlDR != 0) dr = Math.round(dr * (1f + (wtLvlDR - asLvlDR) * 0.333f));
+		dr = Math.round(dr * Dungeon.playstyle.getActualMultiplier(PlaystyleConfig.PLAYSTYLE_ARMOR));
 
 		return dr;
 	}
@@ -701,10 +697,6 @@ public class Hero extends Char {
 		}
 
 		if (dmg < 0) dmg = 0;
-
-		int gcLvlDmg = Dungeon.playstyleLevel(Playstyles.GLASS_CANNON);
-		int asLvlDmg = Dungeon.playstyleLevel(Playstyles.AGILE_SPEEDSTER);
-		if (gcLvlDmg != 0 || asLvlDmg != 0) dmg = Math.round(dmg * (1f + gcLvlDmg * 0.5f - asLvlDmg * 0.333f));
 
 		return dmg;
 	}
@@ -744,9 +736,7 @@ public class Hero extends Char {
 
 		speed = AscensionChallenge.modifyHeroSpeed(speed);
 
-		int asLvlSpd = Dungeon.playstyleLevel(Playstyles.AGILE_SPEEDSTER);
-		int wtLvlSpd = Dungeon.playstyleLevel(Playstyles.WALKING_TANK);
-		if (asLvlSpd != 0 || wtLvlSpd != 0) speed *= (1f + (asLvlSpd - wtLvlSpd) * 0.2f);
+		speed *= Dungeon.playstyle.getActualMultiplier(PlaystyleConfig.PLAYSTYLE_MOVEMENT_SPEED);
 
 		return speed;
 
@@ -800,9 +790,9 @@ public class Hero extends Char {
 		float delay = 1f;
 
 		if (!RingOfForce.fightingUnarmed(this)) {
-			
+
 			return delay * belongings.attackingWeapon().delayFactor( this );
-			
+
 		} else {
 			//Normally putting furor speed on unarmed attacks would be unnecessary
 			//But there's going to be that one guy who gets a furor+force ring combo
@@ -819,7 +809,7 @@ public class Hero extends Char {
 				delay = ((Weapon)belongings.weapon).augment.delayFactor(delay);
 			}
 
-			return delay/speed;
+			return (delay / speed) / Dungeon.playstyle.getActualMultiplier(PlaystyleConfig.PLAYSTYLE_ATTACK_SPEED);
 		}
 	}
 

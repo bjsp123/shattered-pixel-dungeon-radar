@@ -109,7 +109,11 @@ public class RingOfWealth extends Ring {
 	}
 	
 	public static ArrayList<Item> tryForBonusDrop(Char target, int tries ){
-		int bonus = getBuffedBonus(target, Wealth.class);
+		return tryForBonusDrop(target, tries, 0);
+	}
+
+	public static ArrayList<Item> tryForBonusDrop(Char target, int tries, int extraBonus ){
+		int bonus = getBuffedBonus(target, Wealth.class) + extraBonus;
 
 		if (bonus <= 0) return null;
 

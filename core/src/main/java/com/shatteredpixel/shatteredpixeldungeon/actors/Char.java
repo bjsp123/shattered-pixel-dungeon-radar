@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.PlaystyleConfig;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Electricity;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.StormCloud;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ToxicGas;
@@ -416,6 +417,7 @@ public abstract class Char extends Actor {
 			//flat damage bonus is affected by multipliers
 			dmg += dmgBonus;
 
+
 			if (enemy.buff(GuidingLight.Illuminated.class) != null){
 				enemy.buff(GuidingLight.Illuminated.class).detach();
 				if (this == Dungeon.hero && Dungeon.hero.hasTalent(Talent.SEARING_LIGHT)){
@@ -485,6 +487,11 @@ public abstract class Char extends Actor {
 				if (enemy instanceof YogDzewa){
 					dmg *= 0.5f;
 				}
+			}
+
+			//melee playstyle bonus applies to the full attack damage (base + special attack bonus)
+			if (this instanceof Hero && !(((Hero)this).belongings.attackinglWeapon() instanceof MissileWeapon)) {
+				dmg *= Dungeon.playstyle.getActualMultiplier(PlaystyleConfig.PLAYSTYLE_MELEE_DAMAGE);
 			}
 			
 			int effectiveDamage = enemy.defenseProc( this, Math.round(dmg) );
@@ -624,6 +631,14 @@ public abstract class Char extends Actor {
 	public static boolean hit( Char attacker, Char defender, float accMulti, boolean magic ) {
 		float acuStat = attacker.attackSkill( defender );
 		float defStat = defender.defenseSkill( attacker );
+
+		if (attacker == Dungeon.hero) {
+			acuStat *= Dungeon.playstyle.getActualMultiplier(PlaystyleConfig.PLAYSTYLE_ACCURACY);
+		}
+
+		if (defender == Dungeon.hero) {
+			defStat *= Dungeon.playstyle.getActualMultiplier(PlaystyleConfig.PLAYSTYLE_EVASION);
+		}
 
 		if (defender instanceof Hero && ((Hero) defender).damageInterrupt){
 			((Hero) defender).interrupt();

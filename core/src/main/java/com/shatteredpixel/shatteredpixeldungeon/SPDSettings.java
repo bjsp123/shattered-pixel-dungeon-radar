@@ -556,9 +556,16 @@ public class SPDSettings extends GameSettings {
 		return getBoolean( KEY_IGNORE_BLACKLIST, false );
 	}
 
+	public static final String KEY_SEEDFINDER_ITEMS_LVL1  = "seedfinder_items_lvl1";
+	public static final String KEY_SEEDFINDER_ITEMS_LVL2  = "seedfinder_items_lvl2";
 	public static final String KEY_SEEDFINDER_ITEMS_LVL5  = "seedfinder_items_lvl5";
 	public static final String KEY_SEEDFINDER_ITEMS_LVL10 = "seedfinder_items_lvl10";
-	public static final String KEY_SEEDFINDER_ITEMS_LVL15 = "seedfinder_items_lvl15";
+
+	public static void seedfinderItemsLvl1( String v )  { put( KEY_SEEDFINDER_ITEMS_LVL1,  v ); }
+	public static String seedfinderItemsLvl1()           { return getString( KEY_SEEDFINDER_ITEMS_LVL1,  "" ); }
+
+	public static void seedfinderItemsLvl2( String v )  { put( KEY_SEEDFINDER_ITEMS_LVL2,  v ); }
+	public static String seedfinderItemsLvl2()           { return getString( KEY_SEEDFINDER_ITEMS_LVL2,  "" ); }
 
 	public static void seedfinderItemsLvl5( String v )  { put( KEY_SEEDFINDER_ITEMS_LVL5,  v ); }
 	public static String seedfinderItemsLvl5()           { return getString( KEY_SEEDFINDER_ITEMS_LVL5,  "" ); }
@@ -566,13 +573,11 @@ public class SPDSettings extends GameSettings {
 	public static void seedfinderItemsLvl10( String v ) { put( KEY_SEEDFINDER_ITEMS_LVL10, v ); }
 	public static String seedfinderItemsLvl10()          { return getString( KEY_SEEDFINDER_ITEMS_LVL10, "" ); }
 
-	public static void seedfinderItemsLvl15( String v ) { put( KEY_SEEDFINDER_ITEMS_LVL15, v ); }
-	public static String seedfinderItemsLvl15()          { return getString( KEY_SEEDFINDER_ITEMS_LVL15, "" ); }
-
 	public static boolean hasItemRequirements() {
-		return !seedfinderItemsLvl5().isEmpty()
-			|| !seedfinderItemsLvl10().isEmpty()
-			|| !seedfinderItemsLvl15().isEmpty();
+		return !seedfinderItemsLvl1().isEmpty()
+			|| !seedfinderItemsLvl2().isEmpty()
+			|| !seedfinderItemsLvl5().isEmpty()
+			|| !seedfinderItemsLvl10().isEmpty();
 	}
 
 	//Window management (desktop only atm)

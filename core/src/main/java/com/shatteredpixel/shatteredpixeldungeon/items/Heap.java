@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.PlaystyleConfig;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Wraith;
@@ -111,7 +112,8 @@ public class Heap implements Bundlable {
 		}
 
 		type = Type.HEAP;
-		ArrayList<Item> bonus = RingOfWealth.tryForBonusDrop(hero, 1);
+		int luckBonus = Math.round(2f * (float)(Math.log(Dungeon.playstyle.getActualMultiplier(PlaystyleConfig.PLAYSTYLE_LUCK)) / Math.log(1.20)));
+		ArrayList<Item> bonus = RingOfWealth.tryForBonusDrop(hero, 1, luckBonus);
 		if (bonus != null && !bonus.isEmpty()) {
 			items.addAll(0, bonus);
 			RingOfWealth.showFlareForBonusDrop(sprite);

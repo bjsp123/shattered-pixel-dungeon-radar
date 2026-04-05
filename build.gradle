@@ -12,10 +12,10 @@ allprojects {
 
     ext {
         appName = 'Shattered Pixel Dungeon Radar'
-        appPackageName = 'com.bjsp123.spdr'
+        appPackageName = 'com.bjsp123.shatteredpixeldungeonradar'
 
-        appVersionCode = 894
-        appVersionName = '3.3.7'
+        appVersionCode = 895
+        appVersionName = '3.3.8'
 
         appJavaCompatibility = JavaVersion.VERSION_11
 

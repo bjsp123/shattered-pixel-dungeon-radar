@@ -22,7 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.Playstyles;
+import com.shatteredpixel.shatteredpixeldungeon.PlaystyleConfig;
 import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
@@ -397,11 +397,8 @@ public class WndHero extends WndTabbed {
 			Component content = pane.content();
 			float pos = 0;
 
-			int gcLvl = Dungeon.playstyleLevels[Playstyles.GLASS_CANNON];
-			int asLvl = Dungeon.playstyleLevels[Playstyles.AGILE_SPEEDSTER];
-			int wtLvl = Dungeon.playstyleLevels[Playstyles.WALKING_TANK];
-
-			boolean anyActive = gcLvl != 0 || asLvl != 0 || wtLvl != 0;
+			boolean anyActive = false;
+			for (int lvl : Dungeon.playstyleLevels) { if (lvl != 0) { anyActive = true; break; } }
 
 			RenderedTextBlock heading = PixelScene.renderTextBlock("Playstyle Effects:", 8);
 			heading.hardlight(Window.TITLE_COLOR);
@@ -412,19 +409,22 @@ public class WndHero extends WndTabbed {
 			pos = heading.bottom() + GAP;
 
 			if (anyActive) {
-				// Compute total multipliers
-				int dmgPct   = Math.round((gcLvl * 0.5f - asLvl * 0.333f) * 100);
-				int hpPct    = Math.round((wtLvl * 0.3f - gcLvl * 0.25f) * 100);
-				int speedPct = Math.round((asLvl - wtLvl) * 0.2f  * 100);
-				int armorPct = Math.round((wtLvl - asLvl) * 0.333f * 100);
-
+				PlaystyleConfig cfg = Dungeon.playstyle;
 				StringBuilder sb = new StringBuilder();
-				if (dmgPct   != 0) appendStat(sb, "Damage",    dmgPct);
-				if (hpPct    != 0) appendStat(sb, "Max HP",    hpPct);
-				if (speedPct != 0) appendStat(sb, "Speed",     speedPct);
-				if (armorPct != 0) appendStat(sb, "Armor",     armorPct);
+				appendMult(sb, "Melee",    cfg.getActualMultiplier(PlaystyleConfig.PLAYSTYLE_MELEE_DAMAGE));
+				appendMult(sb, "Ranged",   cfg.getActualMultiplier(PlaystyleConfig.PLAYSTYLE_RANGED_DAMAGE));
+				appendMult(sb, "Magic",    cfg.getActualMultiplier(PlaystyleConfig.PLAYSTYLE_MAGIC_DAMAGE));
+				appendMult(sb, "Move Spd", cfg.getActualMultiplier(PlaystyleConfig.PLAYSTYLE_MOVEMENT_SPEED));
+				appendMult(sb, "Atk Spd",  cfg.getActualMultiplier(PlaystyleConfig.PLAYSTYLE_ATTACK_SPEED));
+				appendMult(sb, "Accuracy", cfg.getActualMultiplier(PlaystyleConfig.PLAYSTYLE_ACCURACY));
+				appendMult(sb, "Evasion",  cfg.getActualMultiplier(PlaystyleConfig.PLAYSTYLE_EVASION));
+				appendMult(sb, "HP",       cfg.getActualMultiplier(PlaystyleConfig.PLAYSTYLE_HITPOINTS));
+				appendMult(sb, "Armor",    cfg.getActualMultiplier(PlaystyleConfig.PLAYSTYLE_ARMOR));
+				appendMult(sb, "Luck",     cfg.getActualMultiplier(PlaystyleConfig.PLAYSTYLE_LUCK));
+				appendFlat(sb, "Vision",   Math.round(cfg.getActualMultiplier(PlaystyleConfig.PLAYSTYLE_VISION)));
+				appendFlat(sb, "X-Ray",    Math.round(cfg.getActualMultiplier(PlaystyleConfig.PLAYSTYLE_XRAY_VISION)));
 
-				RenderedTextBlock summary = PixelScene.renderTextBlock(sb.toString(), 7);
+				RenderedTextBlock summary = PixelScene.renderTextBlock(sb.length() > 0 ? sb.toString() : "None.", 7);
 				summary.maxWidth((int) width);
 				summary.setPos(0, pos);
 				PixelScene.align(summary);
@@ -449,9 +449,9 @@ public class WndHero extends WndTabbed {
 				content.add(reqHeader);
 				pos = reqHeader.bottom() + 1;
 
-				String[] reqLabels = {"Floors 1-5", "Floors 6-10", "Floors 11-15"};
-				String[] vals = {SPDSettings.seedfinderItemsLvl5(), SPDSettings.seedfinderItemsLvl10(), SPDSettings.seedfinderItemsLvl15()};
-				for (int i = 0; i < 3; i++) {
+				String[] reqLabels = {"Floor 1", "Floor 2", "Floor 5", "Floor 10"};
+				String[] vals = {SPDSettings.seedfinderItemsLvl1(), SPDSettings.seedfinderItemsLvl2(), SPDSettings.seedfinderItemsLvl5(), SPDSettings.seedfinderItemsLvl10()};
+				for (int i = 0; i < 4; i++) {
 					if (vals[i].isEmpty()) continue;
 					RenderedTextBlock line = PixelScene.renderTextBlock(reqLabels[i] + ": " + vals[i], 6);
 					line.maxWidth((int) width);
@@ -466,11 +466,21 @@ public class WndHero extends WndTabbed {
 			pane.setSize(width, height);
 		}
 
-		private void appendStat(StringBuilder sb, String name, int pct) {
+		private void appendMult(StringBuilder sb, String name, float mult) {
+			int pct = Math.round((mult - 1f) * 100);
+			if (pct == 0) return;
 			if (sb.length() > 0) sb.append(", ");
 			sb.append(name).append(" ");
 			if (pct > 0) sb.append("+");
 			sb.append(pct).append("%");
+		}
+
+		private void appendFlat(StringBuilder sb, String name, int bonus) {
+			if (bonus == 0) return;
+			if (sb.length() > 0) sb.append(", ");
+			sb.append(name).append(" ");
+			if (bonus > 0) sb.append("+");
+			sb.append(bonus);
 		}
 	}
 

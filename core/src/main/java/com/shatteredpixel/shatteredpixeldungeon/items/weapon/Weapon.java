@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.weapon;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.PlaystyleConfig;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Berserk;
@@ -327,6 +328,10 @@ abstract public class Weapon extends KindOfWeapon {
 
 		if (owner.buff(Scimitar.SwordDance.class) != null){
 			multi += 0.6f;
+		}
+
+		if (owner == Dungeon.hero) {
+			multi *= Dungeon.playstyle.getActualMultiplier(PlaystyleConfig.PLAYSTYLE_ATTACK_SPEED);
 		}
 
 		return multi;

@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.PlaystyleConfig;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
@@ -97,19 +98,14 @@ public class Sunray extends TargetedClericSpell {
 		if (ch != null) {
 			ch.sprite.burst(0xFFFFFF44, 5);
 
+			int dmg;
 			if (Char.hasProp(ch, Char.Property.UNDEAD) || Char.hasProp(ch, Char.Property.DEMONIC)){
-				if (hero.pointsInTalent(Talent.SUNRAY) == 2) {
-					ch.damage(12, Sunray.this);
-				} else {
-					ch.damage(8, Sunray.this);
-				}
+				dmg = hero.pointsInTalent(Talent.SUNRAY) == 2 ? 12 : 8;
 			} else {
-				if (hero.pointsInTalent(Talent.SUNRAY) == 2) {
-					ch.damage(Hero.heroDamageIntRange(6, 12), Sunray.this);
-				} else {
-					ch.damage(Hero.heroDamageIntRange(4, 8), Sunray.this);
-				}
+				dmg = hero.pointsInTalent(Talent.SUNRAY) == 2 ? Hero.heroDamageIntRange(6, 12) : Hero.heroDamageIntRange(4, 8);
 			}
+			dmg = Math.round(dmg * Dungeon.playstyle.getActualMultiplier(PlaystyleConfig.PLAYSTYLE_MAGIC_DAMAGE));
+			ch.damage(dmg, Sunray.this);
 
 			if (ch.isAlive()) {
 				if (ch.buff(Blindness.class) != null && ch.buff(SunRayRecentlyBlindedTracker.class) != null) {

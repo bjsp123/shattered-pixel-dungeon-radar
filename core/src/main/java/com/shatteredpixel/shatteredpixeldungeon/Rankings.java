@@ -42,6 +42,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Toolbar;
 import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Bundlable;
+import java.util.Arrays;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.FileUtils;
 
@@ -237,8 +238,9 @@ public enum Rankings {
 	public static final String STATS        = "stats";
 	public static final String BADGES       = "badges";
 	public static final String HANDLERS     = "handlers";
-	public static final String CHALLENGES   = "challenges";
-	public static final String GAME_VERSION = "game_version";
+	public static final String CHALLENGES      = "challenges";
+	public static final String PLAYSTYLE_LEVELS = "playstyle_levels";
+	public static final String GAME_VERSION    = "game_version";
 	public static final String SEED         = "seed";
 	public static final String CUSTOM_SEED	= "custom_seed";
 	public static final String DAILY	    = "daily";
@@ -307,6 +309,9 @@ public enum Rankings {
 		//save challenges
 		rec.gameData.put( CHALLENGES, Dungeon.challenges );
 
+		//save playstyle levels
+		rec.gameData.put( PLAYSTYLE_LEVELS, Dungeon.playstyleLevels );
+
 		rec.gameData.put( GAME_VERSION, Dungeon.initialVersion );
 
 		rec.gameData.put( SEED, Dungeon.seed );
@@ -342,6 +347,13 @@ public enum Rankings {
 		Statistics.restoreFromBundle(data.getBundle(STATS));
 		
 		Dungeon.challenges = data.getInt(CHALLENGES);
+
+		if (data.contains(PLAYSTYLE_LEVELS)) {
+			int[] saved = data.getIntArray(PLAYSTYLE_LEVELS);
+			Dungeon.playstyleLevels = Arrays.copyOf(saved, Playstyles.COUNT);
+		} else {
+			Dungeon.playstyleLevels = new int[Playstyles.COUNT];
+		}
 
 		Dungeon.initialVersion = data.getInt(GAME_VERSION);
 

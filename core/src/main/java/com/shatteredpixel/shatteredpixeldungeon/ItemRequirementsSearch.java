@@ -22,21 +22,24 @@ public class ItemRequirementsSearch {
 
     /**
      * Searches up to maxRolls random seeds and returns the first one where:
+     *  - all fragments in items1Raw  appear in items at depth <= 1
+     *  - all fragments in items2Raw  appear in items at depth <= 2
      *  - all fragments in items5Raw  appear in items at depth <= 5
      *  - all fragments in items10Raw appear in items at depth <= 10
-     *  - all fragments in items15Raw appear in items at depth <= 15
      * Returns a Result with the seed code and full item summary, or null if no match found.
      */
-    public Result findSeedWithRequirements(String items5Raw, String items10Raw,
-                                           String items15Raw, int maxRolls) {
+    public Result findSeedWithRequirements(String items1Raw, String items2Raw,
+                                           String items5Raw, String items10Raw, int maxRolls) {
+        ArrayList<String> frags1  = parseFragments(items1Raw);
+        ArrayList<String> frags2  = parseFragments(items2Raw);
         ArrayList<String> frags5  = parseFragments(items5Raw);
         ArrayList<String> frags10 = parseFragments(items10Raw);
-        ArrayList<String> frags15 = parseFragments(items15Raw);
 
         int maxDepth = 0;
+        if (!frags1.isEmpty())  maxDepth = 1;
+        if (!frags2.isEmpty())  maxDepth = 2;
         if (!frags5.isEmpty())  maxDepth = 5;
         if (!frags10.isEmpty()) maxDepth = 10;
-        if (!frags15.isEmpty()) maxDepth = 15;
         if (maxDepth == 0) return null;
 
         DungeonItemSummary generator = new DungeonItemSummary();
@@ -54,9 +57,10 @@ public class ItemRequirementsSearch {
                 String code = DungeonSeed.convertToCode(candidateSeed);
                 String summary = generator.getItemsSummary(code, maxDepth);
 
+                if (!frags1.isEmpty()  && !allMatch(summary, frags1,  1))  continue;
+                if (!frags2.isEmpty()  && !allMatch(summary, frags2,  2))  continue;
                 if (!frags5.isEmpty()  && !allMatch(summary, frags5,  5))  continue;
                 if (!frags10.isEmpty() && !allMatch(summary, frags10, 10)) continue;
-                if (!frags15.isEmpty() && !allMatch(summary, frags15, 15)) continue;
 
                 return new Result(code, summary);
             }
