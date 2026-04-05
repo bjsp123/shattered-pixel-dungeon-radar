@@ -1,5 +1,7 @@
 # Built application files
 *.apk
+*.apk.idsig
+*.jar
 
 # Files for the Dalvik VM
 *.dex
