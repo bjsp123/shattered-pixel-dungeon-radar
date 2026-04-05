@@ -490,7 +490,7 @@ public abstract class Char extends Actor {
 			}
 
 			//melee playstyle bonus applies to the full attack damage (base + special attack bonus)
-			if (this instanceof Hero && !(((Hero)this).belongings.attackinglWeapon() instanceof MissileWeapon)) {
+			if (this instanceof Hero && !(((Hero)this).belongings.attackingWeapon() instanceof MissileWeapon)) {
 				dmg *= Dungeon.playstyle.getActualMultiplier(PlaystyleConfig.PLAYSTYLE_MELEE_DAMAGE);
 			}
 			
